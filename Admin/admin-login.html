@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جوكر - تسجيل دخول المسؤول</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles - Consistent with previous designs */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #333;
+            --text-light: #f8f9fa;
+            --bg-light: #ffffff;
+            --bg-dark: #1a1a1a;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #2c2c2c;
+            --border-light: #dee2e6;
+            --border-dark: #444;
+            --shadow-light: rgba(0,0,0,0.1);
+            --shadow-dark: rgba(0,0,0,0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3); /* Admin login background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .login-container {
+            background-color: var(--card-bg-light);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+
+        .login-container .logo {
+            font-size: 40px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-container .logo i {
+            color: var(--warning-color);
+            text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .login-container h2 {
+            font-size: 28px;
+            color: var(--text-color);
+            margin-bottom: 30px;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+            text-align: right; /* Align labels right */
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 16px;
+            color: var(--text-color);
+            background-color: var(--light-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-form input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 14px 20px;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .login-form button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 15px;
+            font-size: 15px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0056b3, #003d80);
+        }
+        body.dark-mode .login-container {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 10px 30px var(--shadow-dark);
+            border-color: #444;
+        }
+        body.dark-mode .login-container .logo {
+            color: var(--primary-color);
+        }
+        body.dark-mode .login-container h2 {
+            color: var(--text-light);
+        }
+        body.dark-mode .login-form label {
+            color: var(--text-light);
+        }
+        body.dark-mode .login-form input {
+            background-color: #3a3a3a;
+            color: var(--text-light);
+            border-color: #555;
+        }
+        body.dark-mode .login-form input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4);
+        }
+        body.dark-mode .login-form button {
+            background-color: #0056b3;
+        }
+        body.dark-mode .login-form button:hover {
+            background-color: #004085;
+        }
+        body.dark-mode .error-message {
+            color: #ff6b6b; /* Lighter red for dark mode */
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px;
+                margin: 20px;
+            }
+            .login-container .logo {
+                font-size: 32px;
+            }
+            .login-container h2 {
+                font-size: 24px;
+            }
+            .login-form input,
+            .login-form button {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-hat-wizard"></i>
+            لوحة تحكم جوكر
+        </div>
+        <h2>تسجيل دخول المسؤول</h2>
+        <form class="login-form" id="adminLoginForm">
+            <div class="form-group">
+                <label for="username">اسم المستخدم:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <p class="error-message" id="errorMessage">اسم المستخدم أو كلمة المرور غير صحيحة.</p>
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const adminLoginForm = document.getElementById('adminLoginForm');
+            const errorMessage = document.getElementById('errorMessage');
+
+            adminLoginForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                // --- هذا الجزء يحتاج إلى ربط بالباك إند في تطبيق حقيقي ---
+                // في التطبيق الحقيقي:
+                // 1. سترسل username و password إلى الخادم.
+                // 2. الخادم سيتحقق من البيانات في قاعدة البيانات.
+                // 3. إذا كانت صحيحة، سيعيد الخادم استجابة بنجاح (مثلاً، توكن جلسة).
+                // 4. إذا كانت خاطئة، سيعيد الخادم استجابة بخطأ.
+
+                // هذا مجرد محاكاة للمنطق الأمامي للتوضيح:
+                if (username === 'mohamd' && password === '111222333') {
+                    errorMessage.style.display = 'none';
+                    alert('تم تسجيل الدخول بنجاح! جاري التوجيه إلى لوحة إدارة المستخدمين.');
+                    // في تطبيق حقيقي، سيتم توجيه المستخدم إلى صفحة admin-users.html بعد التحقق من الخادم
+                    window.location.href = 'admin-users.html'; 
+                } else {
+                    errorMessage.style.display = 'block'; // Show error message
+                }
+            });
+        });
+    </script>
+</body>
+</html>
