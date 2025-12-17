@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جوكر - إضافة رصيد</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #333;
+            --text-light: #f8f9fa;
+            --bg-light: #ffffff;
+            --bg-dark: #1a1a1a;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #2c2c2c;
+            --border-light: #dee2e6;
+            --border-dark: #444;
+            --shadow-light: rgba(0,0,0,0.1);
+            --shadow-dark: rgba(0,0,0,0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            background-color: var(--bg-light);
+            box-shadow: 0 0 10px var(--shadow-light);
+            flex-grow: 1;
+            margin: 0 auto;
+            transition: var(--transition);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: var(--bg-light);
+            transition: var(--transition);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 300px;
+            background-color: var(--light-color);
+            padding: 20px;
+            box-sizing: border-box;
+            border-left: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 999;
+            transition: var(--transition);
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: var(--text-light);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        .header .logo {
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .logo i {
+            color: var(--warning-color);
+            text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .header .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header .user-menu .icon {
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .header .user-menu .icon:hover {
+            transform: scale(1.1);
+        }
+
+        .header .user-menu .hamburger-icon {
+            display: none;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--success-color));
+            border-radius: 2px;
+        }
+
+        /* Payment Method Cards */
+        .payment-methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        .payment-card {
+            background-color: var(--card-bg-light);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer; /* Make cards clickable */
+        }
+
+        .payment-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-color: var(--primary-color);
+        }
+
+        .payment-card .icon-wrapper {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            transition: var(--transition);
+        }
+        
+        .payment-card:hover .icon-wrapper {
+            background: linear-gradient(135deg, #0056b3, var(--primary-color));
+            transform: scale(1.05);
+        }
+
+        .payment-card .icon-wrapper i {
+            font-size: 40px;
+            color: var(--text-light);
+        }
+
+        .payment-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .payment-card p {
+            font-size: 16px;
+            color: var(--secondary-color);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .payment-card button {
+            background: linear-gradient(135deg, var(--success-color), #218838);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,123,255,0.2);
+        }
+
+        .payment-card button:hover {
+            background: linear-gradient(135deg, #218838, var(--success-color));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,123,255,0.3);
+        }
+
+        /* Specific Payment Method Styles */
+        .vodafone-cash .icon-wrapper { background: linear-gradient(135deg, #E60000, #FF3333); }
+        .vodafone-cash button { background: linear-gradient(135deg, #E60000, #CC0000); }
+        .vodafone-cash button:hover { background: linear-gradient(135deg, #CC0000, #E60000); }
+        .vodafone-cash:hover { border-color: #E60000; }
+
+        .bank-transfer .icon-wrapper { background: linear-gradient(135deg, #17a2b8, #138496); }
+        .bank-transfer button { background: linear-gradient(135deg, #17a2b8, #138496); }
+        .bank-transfer button:hover { background: linear-gradient(135deg, #138496, #17a2b8); }
+        .bank-transfer:hover { border-color: #17a2b8; }
+
+        .fawry-pay .icon-wrapper { background: linear-gradient(135deg, #ffc107, #e0a800); }
+        .fawry-pay button { background: linear-gradient(135deg, #ffc107, #e0a800); }
+        .fawry-pay button:hover { background: linear-gradient(135deg, #e0a800, #ffc107); }
+        .fawry-pay:hover { border-color: #ffc107; }
+
+        .crypto-pay .icon-wrapper { background: linear-gradient(135deg, #6f42c1, #563d7c); }
+        .crypto-pay button { background: linear-gradient(135deg, #6f42c1, #563d7c); }
+        .crypto-pay button:hover { background: linear-gradient(135deg, #563d7c, #6f42c1); }
+        .crypto-pay:hover { border-color: #6f42c1; }
+
+        .binance-pay .icon-wrapper { background: linear-gradient(135deg, #F0B90B, #E0A000); }
+        .binance-pay button { background: linear-gradient(135deg, #F0B90B, #D09000); }
+        .binance-pay button:hover { background: linear-gradient(135deg, #D09000, #F0B90B); }
+        .binance-pay:hover { border-color: #F0B90B; }
+
+        .bitcoin-pay .icon-wrapper { background: linear-gradient(135deg, #f7931a, #e7830a); }
+        .bitcoin-pay button { background: linear-gradient(135deg, #f7931a, #d7730a); }
+        .bitcoin-pay button:hover { background: linear-gradient(135deg, #d7730a, #f7931a); }
+        .bitcoin-pay:hover { border-color: #f7931a; }
+
+        /* Sidebar Sections */
+        .sidebar-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            margin-bottom: 25px;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        }
+
+        .sidebar-section h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 15px;
+            margin-bottom: 1px;
+            transition: var(--transition);
+        }
+        
+        .sidebar-nav {
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav ul li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .sidebar-nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .sidebar-nav ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), #25a1e0);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav ul li a:hover {
+            background-color: rgba(0,123,255,0.05);
+            transform: translateX(-5px);
+        }
+
+        .sidebar-nav ul li a:hover::before {
+            transform: translateX(0);
+        }
+        
+        .sidebar-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+        }
+        
+        .sidebar-nav ul li a.active i {
+            color: var(--warning-color);
+        }
+
+        .sidebar-nav ul li a.active::before {
+            transform: translateX(0);
+            background: linear-gradient(to bottom, var(--warning-color), #ffc107);
+        }
+
+        .sidebar-nav ul li a i {
+            margin-left: 10px;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        /* Logout button style */
+        .sidebar-nav ul li .logout-btn {
+            background: linear-gradient(135deg, var(--danger-color), #dc3545);
+            color: var(--text-light);
+            border: none;
+            cursor: pointer;
+        }
+
+        .sidebar-nav ul li .logout-btn:hover {
+            background-color: #c82333;
+            transform: translateX(-5px);
+        }
+
+        .dark-mode-toggle {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+
+        .dark-mode-toggle span {
+            font-weight: bold;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .dark-mode-toggle .toggle-container {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .dark-mode-toggle input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 100%;
+            background-color: #ccc;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode-toggle input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #fff;
+            top: 3px;
+            right: 3px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .dark-mode-toggle input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+        }
+
+        .dark-mode-toggle input[type="checkbox"]:checked::before {
+            transform: translateX(-30px);
+            background-color: var(--warning-color);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background-color: var(--light-color);
+            border-radius: 50%;
+            font-size: 20px;
+            color: #555;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-light);
+        }
+
+        .social-icons a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, var(--dark-color), #212529);
+            color: #fff;
+            font-size: 15px;
+            border-top: 1px solid #444;
+            margin-top: auto;
+            width: 100%;
+            box-sizing: border-box;
+            transition: var(--transition);
+            border-radius: 10px;
+        }
+
+        .footer .designer-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .footer .designer-info .logo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--warning-color), #e0a800);
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .footer .designer-info span {
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .footer .designer-info .highlight {
+            color: var(--warning-color);
+            font-weight: 700;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .modal-content {
+            background-color: var(--bg-light);
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            position: relative;
+            animation: slideIn 0.4s forwards;
+            color: var(--text-color);
+        }
+
+        .modal-content .close-button {
+            color: var(--secondary-color);
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-content .close-button:hover,
+        .modal-content .close-button:focus {
+            color: var(--danger-color);
+            text-decoration: none;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 28px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .modal-content .payment-details {
+            margin-bottom: 25px;
+            text-align: right;
+            line-height: 1.8;
+        }
+
+        .modal-content .payment-details p {
+            margin-bottom: 10px;
+            font-size: 17px;
+        }
+
+        .modal-content .payment-details strong {
+            color: var(--dark-color);
+        }
+
+        .modal-content .copy-button {
+            background-color: var(--info-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content .copy-button:hover {
+            background-color: #1192a5;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: right;
+        }
+
+        .modal-content input[type="text"],
+        .modal-content input[type="file"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+        }
+
+        .modal-content input[type="text"]:focus,
+        .modal-content input[type="file"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(0,123,255,0.2);
+            outline: none;
+        }
+
+        .modal-content input[type="file"] {
+            cursor: pointer;
+        }
+
+        .modal-content .submit-button {
+            background: linear-gradient(135deg, var(--success-color), #218838);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 19px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0,123,255,0.25);
+        }
+
+        .modal-content .submit-button:hover {
+            background: linear-gradient(135deg, #218838, var(--success-color));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,123,255,0.35);
+        }
+
+        /* Success message */
+        .success-message {
+            display: none;
+            background-color: var(--success-color);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .success-message i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--warning-color);
+        }
+
+        .success-message p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .success-message button {
+            background-color: white;
+            color: var(--success-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .success-message button:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+                margin: 0;
+                box-shadow: none;
+            }
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                border-left: none;
+                border-bottom: 1px solid var(--border-light);
+                padding-bottom: 30px;
+                transform: translateX(100%);
+                position: fixed;
+                top: 60px; /* Adjust if header height changes */
+                right: 0;
+                height: calc(100vh - 60px);
+                background-color: var(--light-color);
+                transition: transform 0.3s ease-in-out;
+                border-left: none;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .header .user-menu .hamburger-icon {
+                display: block;
+            }
+            .sidebar.active ~ .main-content .header .user-menu .fa-user-circle {
+                display: none; /* Hide when sidebar is active */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .header .user-menu {
+                width: auto;
+                justify-content: flex-end;
+                margin-top: 0;
+            }
+            .payment-methods-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding-top: 60px;
+            }
+            .header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                border-radius: 0;
+            }
+            .main-content, .sidebar {
+                padding: 15px;
+            }
+            .payment-methods-grid {
+                grid-template-columns: 1fr;
+            }
+            .section-title {
+                font-size: 22px;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+        body.dark-mode .container {
+            background-color: #222;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        body.dark-mode .header {
+            background: linear-gradient(135deg, #0056b3, #003d80);
+        }
+        body.dark-mode .sidebar {
+            background-color: #252525;
+            border-left-color: #333;
+            box-shadow: -2px 0 10px rgba(255,255,255,0.1);
+        }
+        body.dark-mode .sidebar-nav ul li a {
+            background-color: #333;
+            color: var(--text-light);
+            border-color: #444;
+        }
+        body.dark-mode .sidebar-nav ul li a:hover {
+            background-color: #3a3a3a;
+        }
+        body.dark-mode .sidebar-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+        }
+        body.dark-mode .sidebar-section {
+            background: linear-gradient(135deg, #2c2c2c, #333);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-color: #444;
+        }
+        body.dark-mode .sidebar-section h3 {
+            color: var(--primary-color);
+        }
+        body.dark-mode .payment-card {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.05);
+            border-color: #0056b3;
+        }
+        body.dark-mode .payment-card h3 {
+            color: var(--text-light);
+        }
+        body.dark-mode .payment-card p {
+            color: #ccc;
+        }
+        body.dark-mode .payment-card .icon-wrapper {
+             background: linear-gradient(135deg, var(--primary-color), #003d80);
+        }
+        body.dark-mode .payment-card:hover .icon-wrapper {
+             background: linear-gradient(135deg, #003d80, var(--primary-color));
+        }
+
+        body.dark-mode .vodafone-cash .icon-wrapper { background: linear-gradient(135deg, #A00000, #CC0000); }
+        body.dark-mode .vodafone-cash button { background: linear-gradient(135deg, #A00000, #CC0000); }
+        body.dark-mode .vodafone-cash button:hover { background: linear-gradient(135deg, #CC0000, #A00000); }
+        body.dark-mode .vodafone-cash:hover { border-color: #A00000; }
+
+        body.dark-mode .bank-transfer .icon-wrapper { background: linear-gradient(135deg, #138496, #0f6674); }
+        body.dark-mode .bank-transfer button { background: linear-gradient(135deg, #138496, #0f6674); }
+        body.dark-mode .bank-transfer button:hover { background: linear-gradient(135deg, #0f6674, #138496); }
+        body.dark-mode .bank-transfer:hover { border-color: #138496; }
+
+        body.dark-mode .fawry-pay .icon-wrapper { background: linear-gradient(135deg, #e0a800, #c69500); }
+        body.dark-mode .fawry-pay button { background: linear-gradient(135deg, #e0a800, #c69500); }
+        body.dark-mode .fawry-pay button:hover { background: linear-gradient(135deg, #c69500, #e0a800); }
+        body.dark-mode .fawry-pay:hover { border-color: #e0a800; }
+
+        body.dark-mode .crypto-pay .icon-wrapper { background: linear-gradient(135deg, #563d7c, #442d62); }
+        body.dark-mode .crypto-pay button { background: linear-gradient(135deg, #563d7c, #442d62); }
+        body.dark-mode .crypto-pay button:hover { background: linear-gradient(135deg, #442d62, #563d7c); }
+        body.dark-mode .crypto-pay:hover { border-color: #563d7c; }
+
+        body.dark-mode .binance-pay .icon-wrapper { background: linear-gradient(135deg, #C09000, #D0A000); }
+        body.dark-mode .binance-pay button { background: linear-gradient(135deg, #C09000, #B08000); }
+        body.dark-mode .binance-pay button:hover { background: linear-gradient(135deg, #B08000, #C09000); }
+        body.dark-mode .binance-pay:hover { border-color: #C09000; }
+
+        body.dark-mode .bitcoin-pay .icon-wrapper { background: linear-gradient(135deg, #b7730a, #c7830a); }
+        body.dark-mode .bitcoin-pay button { background: linear-gradient(135deg, #b7730a, #a7630a); }
+        body.dark-mode .bitcoin-pay button:hover { background: linear-gradient(135deg, #a7630a, #b7730a); }
+        body.dark-mode .bitcoin-pay:hover { border-color: #b7730a; }
+
+        body.dark-mode .social-icons a {
+            background-color: #333;
+            color: #bbb;
+            border-color: #444;
+        }
+        body.dark-mode .footer {
+            background: linear-gradient(to right, #111, #000);
+            border-top-color: #222;
+        }
+        body.dark-mode .dark-mode-toggle {
+            background-color: #333;
+            border-color: #444;
+        }
+        body.dark-mode .dark-mode-toggle span {
+            color: var(--text-light);
+        }
+        body.dark-mode .dark-mode-toggle input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+        }
+
+        body.dark-mode .modal-content {
+            background-color: var(--card-bg-dark);
+            color: var(--text-light);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
+        }
+
+        body.dark-mode .modal-content .payment-details strong {
+            color: var(--text-light);
+        }
+
+        body.dark-mode .modal-content input[type="text"],
+        body.dark-mode .modal-content input[type="file"] {
+            background-color: #333;
+            color: var(--text-light);
+            border-color: #555;
+        }
+
+        body.dark-mode .modal-content input[type="text"]:focus,
+        body.dark-mode .modal-content input[type="file"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(0,123,255,0.5);
+        }
+
+        body.dark-mode .modal-content .close-button {
+            color: #ccc;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-laugh-beam"></i>
+            جوكر
+        </div>
+        <div class="user-menu">
+            <i class="fas fa-bars icon hamburger-icon" id="hamburgerIcon"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <h2 class="section-title">إضافة رصيد</h2>
+
+            <div class="payment-methods-grid">
+                <div class="payment-card vodafone-cash" data-method="vodafone">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3>فودافون كاش</h3>
+                    <p>أسهل وأسرع طريقة لإضافة الرصيد محلياً. تحويل المبلغ المطلوب إلى رقم فودافون كاش المخصص.</p>
+                    <button class="open-payment-modal">إضافة رصيد الآن</button>
+                </div>
+
+                <div class="payment-card bank-transfer" data-method="bank">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-building-columns"></i>
+                    </div>
+                    <h3>تحويل بنكي</h3>
+                    <p>قم بالتحويل البنكي مباشرة من حسابك. هذه الطريقة مثالية للمبالغ الكبيرة وتتطلب تأكيد.</p>
+                    <button class="open-payment-modal">إضافة رصيد الآن</button>
+                </div>
+
+                <div class="payment-card fawry-pay" data-method="fawry">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <h3>فوري باي</h3>
+                    <p>ادفع من خلال خدمة فوري المتوفرة في جميع أنحاء مصر. خيار آمن وموثوق به.</p>
+                    <button class="open-payment-modal">إضافة رصيد الآن</button>
+                </div>
+
+                <div class="payment-card crypto-pay" data-method="crypto">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3>العملات المشفرة (USDT)</h3>
+                    <p>أضف الرصيد باستخدام USDT (TRC20). طريقة حديثة وعالمية لإضافة الرصيد.</p>
+                    <button class="open-payment-modal">إضافة رصيد الآن</button>
+                </div>
+
+                <div class="payment-card binance-pay" data-method="binance">
+                    <div class="icon-wrapper">
+                        <i class="fab fa-bitcoin"></i> </div>
+                    <h3>محفظة بينانس (Binance Pay)</h3>
+                    <p>ادفع بسهولة وأمان باستخدام Binance Pay. خيار سريع وموثوق للمستخدمين.</p>
+                    <button class="open-payment-modal">إضافة رصيد الآن</button>
+                </div>
+
+                <div class="payment-card bitcoin-pay" data-method="bitcoin">
+                    <div class="icon-wrapper">
+                        <i class="fab fa-btc"></i>
+                    </div>
+                    <h3>بيتكوين (Bitcoin)</h3>
+                    <p>قم بالدفع مباشرة باستخدام عملة البيتكوين. طريقة دفع عالمية ومبتكرة.</p>
+                    <button class="open-payment-modal">إضافة رصيد الآن</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <h3>الصفحات الشخصية</h3>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a></li>
+                    <li><a href="add-balance.html" class="active"><i class="fas fa-wallet"></i> إضافة رصيد</a></li>
+                    <li><a href="transaction-history.html"><i class="fas fa-history"></i> سجل معاملاتي</a></li>
+                    <li><a href="my-payments.html"><i class="fas fa-receipt"></i> دفعاتي</a></li>
+                    <li><a href="my-wallet.html"><i class="fas fa-credit-card"></i> محفظتي</a></li>
+                    <li><a href="services.html"><i class="fas fa-shopping-basket"></i>خدماتنا</a></li>
+                    <li><a href="affiliate.html"><i class="fas fa-user-friends"></i> وكلائنا</a></li>
+                    <li><a href="security.html"><i class="fas fa-shield-alt"></i> الحماية</a></li>
+                    <li><a href="about.html"><i class="fas fa-info-circle"></i> من نحن</a></li>
+                    <li><a href="support.html"><i class="fas fa-headset"></i> الدعم الفني</a></li>
+                    <li><a href="edit-profile.html"><i class="fas fa-user-edit"></i> تعديل الملف الشخصي</a></li>
+                    <li><a href="logout.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+                </ul>
+            </nav>
+
+            <div class="dark-mode-toggle">
+                <span>الوضع الداكن</span>
+                <div class="toggle-container">
+                    <input type="checkbox" id="darkModeToggle">
+                </div>
+            </div>
+
+            <div class="social-icons">
+                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-telegram-plane"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+
+            <div class="footer">
+                <div class="designer-info">
+                    <div class="logo-placeholder">Mohamed</div>
+                    <span>برمجة وتصميم</span>
+                    <span class="highlight">محمد محمود</span>
+                    <span>© 2025 جميع الحقوق محفوظة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vodafoneModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>دفع فودافون كاش</h2>
+            <div class="payment-details">
+                <p>يرجى تحويل المبلغ المطلوب إلى رقم فودافون كاش التالي:</p>
+                <p dir="ltr"><strong>01001234567</strong> <button class="copy-button" data-copy="01001234567">نسخ</button></p>
+                <p>ملاحظة: تأكد من تحويل المبلغ الصحيح لتجنب التأخير.</p>
+            </div>
+            <form id="vodafoneForm">
+                <label for="vodafoneSenderNumber">رقم الهاتف المحول منه:</label>
+                <input type="text" id="vodafoneSenderNumber" name="senderNumber" placeholder="أدخل رقم فودافون كاش الخاص بك" required>
+                
+                <label for="vodafoneProof">إثبات التحويل (صورة/لقطة شاشة):</label>
+                <input type="file" id="vodafoneProof" name="proof" accept="image/*" required>
+                
+                <button type="submit" class="submit-button">تأكيد الدفع</button>
+            </form>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <p>تم إرسال طلب الدفع بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.</p>
+                <button class="close-modal-and-return">العودة إلى إضافة رصيد</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bankModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>دفع بالتحويل البنكي</h2>
+            <div class="payment-details">
+                <p>يرجى تحويل المبلغ المطلوب إلى التفاصيل البنكية التالية:</p>
+                <p><strong>اسم البنك:</strong> بنك مصر</p>
+                <p><strong>اسم الحساب:</strong> شركة جوكر لخدمات الدفع</p>
+                <p dir="ltr"><strong>رقم الحساب:</strong> 123-456-7890 <button class="copy-button" data-copy="123-456-7890">نسخ</button></p>
+                <p>ملاحظة: قد تستغرق عمليات التحويل البنكي وقتاً أطول للتأكيد.</p>
+            </div>
+            <form id="bankForm">
+                <label for="bankSenderName">اسم صاحب الحساب المحول منه:</label>
+                <input type="text" id="bankSenderName" name="senderName" placeholder="أدخل اسمك أو اسم صاحب الحساب" required>
+                
+                <label for="bankProof">إثبات التحويل (صورة/لقطة شاشة):</label>
+                <input type="file" id="bankProof" name="proof" accept="image/*" required>
+                
+                <button type="submit" class="submit-button">تأكيد الدفع</button>
+            </form>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <p>تم إرسال طلب الدفع بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.</p>
+                <button class="close-modal-and-return">العودة إلى إضافة رصيد</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fawryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>دفع فوري باي</h2>
+            <div class="payment-details">
+                <p>ادفع من خلال خدمة فوري عن طريق الكود التالي:</p>
+                <p dir="ltr"><strong>كود فوري:</strong> 7890123 <button class="copy-button" data-copy="7890123">نسخ</button></p>
+                <p>يرجى زيارة أقرب منفذ فوري وإتمام الدفع باستخدام هذا الكود.</p>
+            </div>
+            <form id="fawryForm">
+                <label for="fawryRefNumber">رقم مرجع عملية فوري (إن وجد):</label>
+                <input type="text" id="fawryRefNumber" name="refNumber" placeholder="أدخل رقم المرجع من إيصال فوري" required>
+                
+                <label for="fawryProof">إيصال فوري (صورة/لقطة شاشة):</label>
+                <input type="file" id="fawryProof" name="proof" accept="image/*" required>
+                
+                <button type="submit" class="submit-button">تأكيد الدفع</button>
+            </form>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <p>تم إرسال طلب الدفع بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.</p>
+                <button class="close-modal-and-return">العودة إلى إضافة رصيد</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cryptoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>دفع بالعملات المشفرة (USDT - TRC20)</h2>
+            <div class="payment-details">
+                <p>يرجى تحويل مبلغ USDT (TRC20) المطلوب إلى العنوان التالي:</p>
+                <p dir="ltr" style="word-break: break-all;"><strong>عنوان المحفظة:</strong> TXnCqQ45aBcDeFgHiJkLmNoPqRsTuVwXyZ12345 <button class="copy-button" data-copy="TXnCqQ45aBcDeFgHiJkLmNoPqRsTuVwXyZ12345">نسخ</button></p>
+                <p><strong>الشبكة:</strong> TRC20 (Tron)</p>
+                <p>ملاحظة: تأكد من استخدام الشبكة الصحيحة لتجنب فقدان الأموال.</p>
+            </div>
+            <form id="cryptoForm">
+                <label for="cryptoTxnId">معرف العملية (Transaction ID / TxID):</label>
+                <input type="text" id="cryptoTxnId" name="txnId" placeholder="أدخل معرف العملية الخاص بالتحويل" required>
+                
+                <label for="cryptoAmount">المبلغ المحول (بالدولار الأمريكي/USDT):</label>
+                <input type="text" id="cryptoAmount" name="amount" placeholder="أدخل المبلغ الذي قمت بتحويله" required>
+
+                <label for="cryptoProof">إثبات التحويل (صورة/لقطة شاشة):</label>
+                <input type="file" id="cryptoProof" name="proof" accept="image/*" required>
+                
+                <button type="submit" class="submit-button">تأكيد الدفع</button>
+            </form>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <p>تم إرسال طلب الدفع بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.</p>
+                <button class="close-modal-and-return">العودة إلى إضافة رصيد</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="binanceModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>دفع محفظة بينانس (Binance Pay)</h2>
+            <div class="payment-details">
+                <p>يرجى إرسال المبلغ المطلوب إلى معرف Binance Pay التالي:</p>
+                <p dir="ltr"><strong>معرف Binance Pay:</strong> 123456789 <button class="copy-button" data-copy="123456789">نسخ</button></p>
+                <p>ملاحظة: تأكد من إدخال المعرف الصحيح عند الدفع.</p>
+            </div>
+            <form id="binanceForm">
+                <label for="binanceTxnId">معرف العملية (Transaction ID / TxID):</label>
+                <input type="text" id="binanceTxnId" name="txnId" placeholder="أدخل معرف العملية الخاص بالتحويل" required>
+                
+                <label for="binanceAmount">المبلغ المحول (بالدولار الأمريكي/USDT):</label>
+                <input type="text" id="binanceAmount" name="amount" placeholder="أدخل المبلغ الذي قمت بتحويله" required>
+
+                <label for="binanceProof">إثبات التحويل (صورة/لقطة شاشة):</label>
+                <input type="file" id="binanceProof" name="proof" accept="image/*" required>
+                
+                <button type="submit" class="submit-button">تأكيد الدفع</button>
+            </form>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <p>تم إرسال طلب الدفع بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.</p>
+                <button class="close-modal-and-return">العودة إلى إضافة رصيد</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bitcoinModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>دفع بيتكوين (Bitcoin)</h2>
+            <div class="payment-details">
+                <p>يرجى تحويل مبلغ البيتكوين المطلوب إلى العنوان التالي:</p>
+                <p dir="ltr" style="word-break: break-all;"><strong>عنوان محفظة البيتكوين:</strong> bc1qabcdefghijklmnopqrstuvwxyz0123456789abcdef <button class="copy-button" data-copy="bc1qabcdefghijklmnopqrstuvwxyz0123456789abcdef">نسخ</button></p>
+                <p>ملاحظة: قد يستغرق تأكيد معاملات البيتكوين بعض الوقت.</p>
+            </div>
+            <form id="bitcoinForm">
+                <label for="bitcoinTxnId">معرف العملية (Transaction ID / TxID):</label>
+                <input type="text" id="bitcoinTxnId" name="txnId" placeholder="أدخل معرف العملية الخاص بالتحويل" required>
+                
+                <label for="bitcoinAmount">المبلغ المحول (بالبيتكوين):</label>
+                <input type="text" id="bitcoinAmount" name="amount" placeholder="أدخل المبلغ الذي قمت بتحويله" required>
+
+                <label for="bitcoinProof">إثبات التحويل (صورة/لقطة شاشة):</label>
+                <input type="file" id="bitcoinProof" name="proof" accept="image/*" required>
+                
+                <button type="submit" class="submit-button">تأكيد الدفع</button>
+            </form>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <p>تم إرسال طلب الدفع بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.</p>
+                <button class="close-modal-and-return">العودة إلى إضافة رصيد</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const hamburgerIcon = document.getElementById('hamburgerIcon');
+            const sidebar = document.getElementById('sidebar');
+            const paymentCards = document.querySelectorAll('.payment-card');
+            const closeButtons = document.querySelectorAll('.modal .close-button');
+            const copyButtons = document.querySelectorAll('.copy-button');
+            const submitForms = document.querySelectorAll('.modal form');
+            const returnButtons = document.querySelectorAll('.close-modal-and-return');
+
+            // Dark Mode Toggle Logic
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (darkModeToggle) {
+                    darkModeToggle.checked = true;
+                }
+            }
+
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('change', () => {
+                    if (darkModeToggle.checked) {
+                        document.body.classList.add('dark-mode');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        localStorage.setItem('theme', 'light');
+                    }
+                });
+            }
+
+            // Hamburger Menu Logic (for mobile)
+            if (hamburgerIcon && sidebar) {
+                hamburgerIcon.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            // Close sidebar if clicked outside (for mobile)
+            document.addEventListener('click', (event) => {
+                if (sidebar.classList.contains('active') &&
+                    !sidebar.contains(event.target) &&
+                    !hamburgerIcon.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Payment Modal Logic
+            paymentCards.forEach(card => {
+                card.addEventListener('click', (event) => {
+                    // Prevent opening modal if clicking the button directly (it has its own handler)
+                    if (event.target.tagName === 'BUTTON') {
+                        return;
+                    }
+
+                    const method = card.dataset.method;
+                    let modalId;
+                    if (method === 'vodafone') {
+                        modalId = 'vodafoneModal';
+                    } else if (method === 'bank') {
+                        modalId = 'bankModal';
+                    } else if (method === 'fawry') {
+                        modalId = 'fawryModal';
+                    } else if (method === 'crypto') {
+                        modalId = 'cryptoModal';
+                    } else if (method === 'binance') {
+                        modalId = 'binanceModal';
+                    } else if (method === 'bitcoin') {
+                        modalId = 'bitcoinModal';
+                    }
+
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        // Reset forms and hide success messages when opening
+                        modal.querySelectorAll('form').forEach(form => form.reset());
+                        modal.querySelectorAll('.success-message').forEach(msg => msg.style.display = 'none');
+                        modal.querySelectorAll('form').forEach(form => form.style.display = 'block');
+                    }
+                });
+            });
+
+            // Open modal when button inside card is clicked
+            document.querySelectorAll('.open-payment-modal').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent card's click event from firing
+                    const method = event.target.closest('.payment-card').dataset.method;
+                    let modalId;
+                    if (method === 'vodafone') {
+                        modalId = 'vodafoneModal';
+                    } else if (method === 'bank') {
+                        modalId = 'bankModal';
+                    } else if (method === 'fawry') {
+                        modalId = 'fawryModal';
+                    } else if (method === 'crypto') {
+                        modalId = 'cryptoModal';
+                    } else if (method === 'binance') {
+                        modalId = 'binanceModal';
+                    } else if (method === 'bitcoin') {
+                        modalId = 'bitcoinModal';
+                    }
+
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        // Reset forms and hide success messages when opening
+                        modal.querySelectorAll('form').forEach(form => form.reset());
+                        modal.querySelectorAll('.success-message').forEach(msg => msg.style.display = 'none');
+                        modal.querySelectorAll('form').forEach(form => form.style.display = 'block');
+                    }
+                });
+            });
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.target.closest('.modal').style.display = 'none';
+                });
+            });
+
+            // Close modal when clicking outside the modal content
+            window.addEventListener('click', (event) => {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (event.target == modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+
+            // Copy to clipboard functionality
+            copyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const textToCopy = button.dataset.copy;
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        button.textContent = 'تم النسخ!';
+                        setTimeout(() => {
+                            button.textContent = 'نسخ';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                });
+            });
+
+            // Handle form submission
+            submitForms.forEach(form => {
+                form.addEventListener('submit', (event) => {
+                    event.preventDefault(); // Prevent actual form submission
+
+                    // In a real application, you would send this data to your backend
+                    // const formData = new FormData(form);
+                    // for (let pair of formData.entries()) {
+                    //      console.log(pair[0]+ ': '+ pair[1]);
+                    // }
+
+                    // Simulate API call success
+                    form.style.display = 'none'; // Hide the form
+                    const successMessage = form.nextElementSibling; // Get the success message div
+                    successMessage.style.display = 'block'; // Show success message
+                });
+            });
+
+            // Handle return button after success message
+            returnButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const modal = event.target.closest('.modal');
+                    if (modal) {
+                        modal.style.display = 'none'; // Close the modal
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

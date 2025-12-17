@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جوكر - سجل معاملاتي</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #333;
+            --text-light: #f8f9fa;
+            --bg-light: #ffffff;
+            --bg-dark: #1a1a1a;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #2c2c2c;
+            --border-light: #dee2e6;
+            --border-dark: #444;
+            --shadow-light: rgba(0,0,0,0.1);
+            --shadow-dark: rgba(0,0,0,0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            background-color: var(--bg-light);
+            box-shadow: 0 0 10px var(--shadow-light);
+            flex-grow: 1;
+            margin: 0 auto;
+            transition: var(--transition);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: var(--bg-light);
+            transition: var(--transition);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 300px;
+            background-color: var(--light-color);
+            padding: 20px;
+            box-sizing: border-box;
+            border-left: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 999;
+            transition: var(--transition);
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: var(--text-light);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        .header .logo {
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .logo i {
+            color: var(--warning-color);
+            text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .header .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header .user-menu .icon {
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .header .user-menu .icon:hover {
+            transform: scale(1.1);
+        }
+
+        .header .user-menu .hamburger-icon {
+            display: none;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--success-color));
+            border-radius: 2px;
+        }
+
+        /* Sidebar Sections */
+        .sidebar-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            margin-bottom: 25px;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        }
+
+        .sidebar-section h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 15px;
+            margin-bottom: 1px;
+            transition: var(--transition);
+        }
+        
+        .sidebar-nav {
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav ul li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .sidebar-nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .sidebar-nav ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), #25a1e0);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav ul li a:hover {
+            background-color: rgba(0,123,255,0.05);
+            transform: translateX(-5px);
+        }
+
+        .sidebar-nav ul li a:hover::before {
+            transform: translateX(0);
+        }
+        
+        .sidebar-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+        }
+        
+        .sidebar-nav ul li a.active i {
+            color: var(--warning-color);
+        }
+
+        .sidebar-nav ul li a.active::before {
+            transform: translateX(0);
+            background: linear-gradient(to bottom, var(--warning-color), #ffc107);
+        }
+
+        .sidebar-nav ul li a i {
+            margin-left: 10px;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        /* Logout button style */
+        .sidebar-nav ul li .logout-btn {
+            background: linear-gradient(135deg, var(--danger-color), #dc3545);
+            color: var(--text-light);
+            border: none;
+            cursor: pointer;
+        }
+
+        .sidebar-nav ul li .logout-btn:hover {
+            background-color: #c82333;
+            transform: translateX(-5px);
+        }
+
+        .dark-mode-toggle {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+
+        .dark-mode-toggle span {
+            font-weight: bold;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .dark-mode-toggle .toggle-container {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .dark-mode-toggle input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 100%;
+            background-color: #ccc;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode-toggle input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #fff;
+            top: 3px;
+            right: 3px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .dark-mode-toggle input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+        }
+
+        .dark-mode-toggle input[type="checkbox"]:checked::before {
+            transform: translateX(-30px);
+            background-color: var(--warning-color);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background-color: var(--light-color);
+            border-radius: 50%;
+            font-size: 20px;
+            color: #555;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-light);
+        }
+
+        .social-icons a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, var(--dark-color), #212529);
+            color: #fff;
+            font-size: 15px;
+            border-top: 1px solid #444;
+            margin-top: auto;
+            width: 100%;
+            box-sizing: border-box;
+            transition: var(--transition);
+            border-radius: 10px;
+        }
+
+        .footer .designer-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .footer .designer-info .logo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--warning-color), #e0a800);
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .footer .designer-info span {
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .footer .designer-info .highlight {
+            color: var(--warning-color);
+            font-weight: 700;
+        }
+
+        /* Transaction History Table */
+        .transaction-table-container {
+            background-color: var(--card-bg-light);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px var(--shadow-light);
+            padding: 25px;
+            margin-top: 30px;
+            overflow-x: auto; /* Ensures table is scrollable on small screens */
+            transition: var(--transition);
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 15px;
+            text-align: right; /* Align text to the right for RTL */
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .transaction-table th {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            font-weight: 700;
+            text-align: right; /* Align header text to the right for RTL */
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .transaction-table tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        .transaction-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .status-completed {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .status-pending {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .status-failed {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+                margin: 0;
+                box-shadow: none;
+            }
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                border-left: none;
+                border-bottom: 1px solid var(--border-light);
+                padding-bottom: 30px;
+                transform: translateX(100%);
+                position: fixed;
+                top: 60px; /* Adjust if header height changes */
+                right: 0;
+                height: calc(100vh - 60px);
+                background-color: var(--light-color);
+                transition: transform 0.3s ease-in-out;
+                border-left: none;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .header .user-menu .hamburger-icon {
+                display: block;
+            }
+            .sidebar.active ~ .main-content .header .user-menu .fa-user-circle {
+                display: none; /* Hide when sidebar is active */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .header .user-menu {
+                width: auto;
+                justify-content: flex-end;
+                margin-top: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding-top: 60px;
+            }
+            .header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                border-radius: 0;
+            }
+            .main-content, .sidebar {
+                padding: 15px;
+            }
+            .section-title {
+                font-size: 22px;
+            }
+            .transaction-table th,
+            .transaction-table td {
+                padding: 10px;
+                font-size: 13px;
+            }
+            .status-badge {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+        body.dark-mode .container {
+            background-color: #222;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        body.dark-mode .header {
+            background: linear-gradient(135deg, #0056b3, #003d80);
+        }
+        body.dark-mode .sidebar {
+            background-color: #252525;
+            border-left-color: #333;
+            box-shadow: -2px 0 10px rgba(255,255,255,0.1);
+        }
+        body.dark-mode .sidebar-nav ul li a {
+            background-color: #333;
+            color: var(--text-light);
+            border-color: #444;
+        }
+        body.dark-mode .sidebar-nav ul li a:hover {
+            background-color: #3a3a3a;
+        }
+        body.dark-mode .sidebar-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+        }
+        body.dark-mode .sidebar-section {
+            background: linear-gradient(135deg, #2c2c2c, #333);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-color: #444;
+        }
+        body.dark-mode .sidebar-section h3 {
+            color: var(--primary-color);
+        }
+        body.dark-mode .social-icons a {
+            background-color: #333;
+            color: #bbb;
+            border-color: #444;
+        }
+        body.dark-mode .footer {
+            background: linear-gradient(to right, #111, #000);
+            border-top-color: #222;
+        }
+        body.dark-mode .dark-mode-toggle {
+            background-color: #333;
+            border-color: #444;
+        }
+        body.dark-mode .dark-mode-toggle span {
+            color: var(--text-light);
+        }
+        body.dark-mode .dark-mode-toggle input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+        }
+
+        body.dark-mode .transaction-table-container {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.05);
+        }
+        body.dark-mode .transaction-table th {
+            background-color: #0056b3;
+            color: var(--text-light);
+        }
+        body.dark-mode .transaction-table td {
+            border-bottom-color: #333;
+        }
+        body.dark-mode .transaction-table tr:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-laugh-beam"></i>
+            جوكر
+        </div>
+        <div class="user-menu">
+            <i class="fas fa-bars icon hamburger-icon" id="hamburgerIcon"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <h2 class="section-title">سجل معاملاتي</h2>
+
+            <div class="transaction-table-container">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>الرقم المرجعي</th>
+                            <th>النوع</th>
+                            <th>المبلغ</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1001</td>
+                            <td>إضافة رصيد (فودافون كاش)</td>
+                            <td>150 EGP</td>
+                            <td>2025-05-28</td>
+                            <td><span class="status-badge status-completed">مكتمل</span></td>
+                        </tr>
+                        <tr>
+                            <td>#1002</td>
+                            <td>شراء خدمة (VPN)</td>
+                            <td>-25 EGP</td>
+                            <td>2025-05-29</td>
+                            <td><span class="status-badge status-completed">مكتمل</span></td>
+                        </tr>
+                        <tr>
+                            <td>#1003</td>
+                            <td>إضافة رصيد (تحويل بنكي)</td>
+                            <td>500 EGP</td>
+                            <td>2025-05-30</td>
+                            <td><span class="status-badge status-pending">قيد الانتظار</span></td>
+                        </tr>
+                        <tr>
+                            <td>#1004</td>
+                            <td>شراء منتج (بطاقة هدايا)</td>
+                            <td>-75 EGP</td>
+                            <td>2025-05-31</td>
+                            <td><span class="status-badge status-completed">مكتمل</span></td>
+                        </tr>
+                        <tr>
+                            <td>#1005</td>
+                            <td>إضافة رصيد (USDT)</td>
+                            <td>100 USDT</td>
+                            <td>2025-06-01</td>
+                            <td><span class="status-badge status-completed">مكتمل</span></td>
+                        </tr>
+                         <tr>
+                            <td>#1006</td>
+                            <td>شراء خدمة (اشتراك)</td>
+                            <td>-50 EGP</td>
+                            <td>2025-06-01</td>
+                            <td><span class="status-badge status-failed">فشل</span></td>
+                        </tr>
+                        <tr>
+                            <td>#1007</td>
+                            <td>إضافة رصيد (Binance Pay)</td>
+                            <td>200 USDT</td>
+                            <td>2025-06-01</td>
+                            <td><span class="status-badge status-pending">قيد الانتظار</span></td>
+                        </tr>
+                        <tr>
+                            <td>#1008</td>
+                            <td>إضافة رصيد (Bitcoin)</td>
+                            <td>0.005 BTC</td>
+                            <td>2025-06-01</td>
+                            <td><span class="status-badge status-pending">قيد الانتظار</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <h3>الصفحات الشخصية</h3>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a></li>
+                    <li><a href="add-balance.html"><i class="fas fa-wallet"></i> إضافة رصيد</a></li>
+                    <li><a href="transaction-history.html" class="active"><i class="fas fa-history"></i> سجل معاملاتي</a></li>
+                    <li><a href="my-payments.html"><i class="fas fa-receipt"></i> دفعاتي</a></li>
+                    <li><a href="my-wallet.html"><i class="fas fa-credit-card"></i> محفظتي</a></li>
+                    <li><a href="services.html"><i class="fas fa-shopping-basket"></i> خدماتنا</a></li>
+                    <li><a href="affiliate.html"><i class="fas fa-user-friends"></i> وكلائنا</a></li>
+                    <li><a href="security.html"><i class="fas fa-shield-alt"></i> الحماية</a></li>
+                    <li><a href="about.html"><i class="fas fa-info-circle"></i> من نحن</a></li>
+                    <li><a href="support.html"><i class="fas fa-headset"></i> الدعم الفني</a></li>
+                    <li><a href="edit-profile.html"><i class="fas fa-user-edit"></i> تعديل الملف الشخصي</a></li>
+                    <li><a href="logout.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+                </ul>
+            </nav>
+
+            <div class="dark-mode-toggle">
+                <span>الوضع الداكن</span>
+                <div class="toggle-container">
+                    <input type="checkbox" id="darkModeToggle">
+                </div>
+            </div>
+
+            <div class="social-icons">
+                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-telegram-plane"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+
+            <div class="footer">
+                <div class="designer-info">
+                    <div class="logo-placeholder">Mohamed</div>
+                    <span>برمجة وتصميم</span>
+                    <span class="highlight">محمد محمود</span>
+                    <span>© 2025 جميع الحقوق محفوظة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const hamburgerIcon = document.getElementById('hamburgerIcon');
+            const sidebar = document.getElementById('sidebar');
+
+            // Dark Mode Toggle Logic
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (darkModeToggle) {
+                    darkModeToggle.checked = true;
+                }
+            }
+
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('change', () => {
+                    if (darkModeToggle.checked) {
+                        document.body.classList.add('dark-mode');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        localStorage.setItem('theme', 'light');
+                    }
+                });
+            }
+
+            // Hamburger Menu Logic (for mobile)
+            if (hamburgerIcon && sidebar) {
+                hamburgerIcon.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            // Close sidebar if clicked outside (for mobile)
+            document.addEventListener('click', (event) => {
+                if (sidebar.classList.contains('active') &&
+                    !sidebar.contains(event.target) &&
+                    !hamburgerIcon.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

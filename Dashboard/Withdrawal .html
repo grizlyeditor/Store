@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جوكر - سحب رصيد</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #333;
+            --text-light: #f8f9fa;
+            --bg-light: #ffffff;
+            --bg-dark: #1a1a1a;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #2c2c2c;
+            --border-light: #dee2e6;
+            --border-dark: #444;
+            --shadow-light: rgba(0,0,0,0.1);
+            --shadow-dark: rgba(0,0,0,0.3);
+            --transition: all 0.3s ease;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            background-color: var(--bg-light);
+            box-shadow: 0 0 10px var(--shadow-light);
+            flex-grow: 1;
+            margin: 0 auto;
+            transition: var(--transition);
+        }
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: var(--bg-light);
+            transition: var(--transition);
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            width: 300px;
+            background-color: var(--light-color);
+            padding: 20px;
+            box-sizing: border-box;
+            border-left: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 999;
+            transition: var(--transition);
+        }
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: var(--text-light);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+        .header .logo {
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header .logo i {
+            color: var(--warning-color);
+            text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+            animation: pulse 2s infinite;
+        }
+        .header .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header .user-menu .icon {
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .header .user-menu .icon:hover {
+            transform: scale(1.1);
+        }
+        .header .user-menu .hamburger-icon {
+            display: none;
+        }
+        /* User Info Section (re-used for dashboard-like info) */
+        .user-info-card {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: var(--text-light);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .user-info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.1));
+            opacity: 0.1;
+            z-index: 0;
+        }
+        .user-info-card .content {
+            position: relative;
+            z-index: 1;
+        }
+        .user-info-card .profile-avatar {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--warning-color), #e0a800);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #333;
+            margin: 0 auto 15px;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 5px rgba(255,255,255,0.3);
+        }
+        .user-info-card h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .user-info-card .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .user-info-card .stat-item {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: background-color 0.3s ease;
+        }
+        .user-info-card .stat-item:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+        .user-info-card .stat-item .value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .user-info-card .stat-item .label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        /* Section Title */
+        .section-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--success-color));
+            border-radius: 2px;
+        }
+        /* Sidebar Sections */
+        .sidebar-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            margin-bottom: 25px;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        }
+        .sidebar-section h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 15px;
+            margin-bottom: 1px;
+            transition: var(--transition);
+        }
+        .sidebar-nav {
+            width: 100%;
+            margin-top: 25px;
+        }
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-nav ul li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .sidebar-nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+        .sidebar-nav ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), #25a1e0);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .sidebar-nav ul li a:hover {
+            background-color: rgba(0,123,255,0.05);
+            transform: translateX(-5px);
+        }
+        .sidebar-nav ul li a:hover::before {
+            transform: translateX(0);
+        }
+        .sidebar-nav ul li a i {
+            margin-left: 10px;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+        /* Active sidebar link */
+        .sidebar-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.2);
+            border-color: var(--primary-color);
+        }
+        .sidebar-nav ul li a.active i {
+            color: var(--warning-color);
+        }
+        .sidebar-nav ul li a.active::before {
+            transform: translateX(0);
+            background: linear-gradient(to bottom, var(--warning-color), #ffcc00);
+        }
+
+        /* Logout button style */
+        .sidebar-nav ul li .logout-btn {
+            background: linear-gradient(135deg, var(--danger-color), #dc3545);
+            color: var(--text-light);
+            border: none;
+            cursor: pointer;
+        }
+        .sidebar-nav ul li .logout-btn:hover {
+            background-color: #c82333;
+            transform: translateX(-5px);
+        }
+        .dark-mode-toggle {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+        .dark-mode-toggle span {
+            font-weight: bold;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+        .dark-mode-toggle .toggle-container {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        .dark-mode-toggle input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 100%;
+            background-color: #ccc;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+        .dark-mode-toggle input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #fff;
+            top: 3px;
+            right: 3px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .dark-mode-toggle input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+        }
+        .dark-mode-toggle input[type="checkbox"]:checked::before {
+            transform: translateX(-30px);
+            background-color: var(--warning-color);
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background-color: var(--light-color);
+            border-radius: 50%;
+            font-size: 20px;
+            color: #555;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-light);
+        }
+        .social-icons a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            color: var(--primary-color);
+        }
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, var(--dark-color), #212529);
+            color: #fff;
+            font-size: 15px;
+            border-top: 1px solid #444;
+            margin-top: auto;
+            width: 100%;
+            box-sizing: border-box;
+            transition: var(--transition);
+            border-radius: 10px;
+        }
+        .footer .designer-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .footer .designer-info .logo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--warning-color), #e0a800);
+            border-radius: 50%; /* Changed to 50% for a circular shape */
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .footer .designer-info span {
+            font-weight: 500;
+            margin: 5px 0;
+        }
+        .footer .designer-info .highlight {
+            color: var(--warning-color);
+            font-weight: 700;
+        }
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+                margin: 0;
+                box-shadow: none;
+            }
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                border-left: none;
+                border-bottom: 1px solid var(--border-light);
+                padding-bottom: 30px;
+                transform: translateX(100%);
+                position: fixed;
+                top: 60px; /* Adjust if header height changes */
+                right: 0;
+                height: calc(100vh - 60px);
+                background-color: var(--light-color);
+                transition: transform 0.3s ease-in-out;
+                border-left: none;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .header .user-menu .hamburger-icon {
+                display: block;
+            }
+            .sidebar.active ~ .main-content .header .user-menu .fa-user-circle {
+                display: none; /* Hide when sidebar is active */
+            }
+            .header .user-menu .fa-shopping-cart {
+                display: block; /* Always visible */
+            }
+        }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .header .user-menu {
+                width: auto;
+                justify-content: flex-end;
+                margin-top: 0;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding-top: 60px;
+            }
+            .header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                border-radius: 0;
+            }
+            .main-content, .sidebar {
+                padding: 15px;
+            }
+            .user-info-card {
+                padding: 20px;
+            }
+            .user-info-card h2 {
+                font-size: 24px;
+            }
+            .user-info-card .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .user-info-card .profile-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 30px;
+            }
+            .section-title {
+                font-size: 22px;
+            }
+        }
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+        body.dark-mode .container {
+            background-color: #222;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        body.dark-mode .header {
+            background: linear-gradient(135deg, #0056b3, #003d80);
+        }
+        body.dark-mode .sidebar {
+            background-color: #252525;
+            border-left-color: #333;
+            box-shadow: -2px 0 10px rgba(255,255,255,0.1);
+        }
+        body.dark-mode .user-info-card {
+            background: linear-gradient(135deg, #0056b3, #003d80);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .user-info-card::before {
+            background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2));
+            opacity: 0.05;
+        }
+        body.dark-mode .user-info-card .profile-avatar {
+            background-color: #ffc107; /* Keep warning color for contrast */
+            color: #222;
+            border-color: #222;
+            box-shadow: 0 0 0 5px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .user-info-card .stat-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        body.dark-mode .user-info-card .stat-item:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        body.dark-mode .sidebar-nav ul li a {
+            background-color: #333;
+            color: var(--text-light);
+            border-color: #444;
+        }
+        body.dark-mode .sidebar-nav ul li a:hover {
+            background-color: #3a3a3a;
+        }
+        body.dark-mode .sidebar-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.2);
+            border-color: var(--primary-color);
+        }
+        body.dark-mode .sidebar-nav ul li a.active i {
+            color: var(--warning-color);
+        }
+        body.dark-mode .sidebar-section {
+            background: linear-gradient(135deg, #2c2c2c, #333);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-color: #444;
+        }
+        body.dark-mode .sidebar-section h3 {
+            color: var(--primary-color);
+        }
+        body.dark-mode .social-icons a {
+            background-color: #333;
+            color: #bbb;
+            border-color: #444;
+        }
+        body.dark-mode .footer {
+            background: linear-gradient(to right, #111, #000);
+            border-top-color: #222;
+        }
+        body.dark-mode .dark-mode-toggle {
+            background-color: #333;
+            border-color: #444;
+        }
+        body.dark-mode .dark-mode-toggle span {
+            color: var(--text-light);
+        }
+        body.dark-mode .dark-mode-toggle input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+        }
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Withdrawal Page Specific Styles */
+        .withdrawal-form-section {
+            background-color: var(--card-bg-light);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px var(--shadow-light);
+            margin-bottom: 30px;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+        body.dark-mode .withdrawal-form-section {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.05);
+            border-color: #444;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+        body.dark-mode .form-group label {
+            color: var(--text-light);
+        }
+
+        .form-group input[type="number"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 16px;
+            color: var(--text-color);
+            background-color: var(--light-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            box-sizing: border-box; /* Ensures padding doesn't increase width */
+        }
+        /* Specific style for USDT address to be taller */
+        .form-group #usdtAddress {
+            height: 80px; /* Make it taller */
+            resize: vertical; /* Allow vertical resizing */
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select,
+        body.dark-mode .form-group textarea {
+            background-color: #3a3a3a;
+            border-color: #555;
+            color: var(--text-light);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+        }
+
+        /* Error input style */
+        .form-group input.error,
+        .form-group select.error,
+        .form-group textarea.error {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 0 3px rgba(220,53,69,0.25);
+        }
+        body.dark-mode .form-group input.error,
+        body.dark-mode .form-group select.error,
+        body.dark-mode .form-group textarea.error {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 0 3px rgba(220,53,69,0.35);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: block;
+            text-align: right;
+        }
+
+        .current-balance-info {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: var(--primary-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        body.dark-mode .current-balance-info {
+            background-color: rgba(0, 123, 255, 0.2);
+            color: var(--info-color);
+        }
+
+        .withdrawal-fee-info {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px; /* Adjusted margin */
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+        body.dark-mode .withdrawal-fee-info {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--success-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(40,167,69,0.2);
+        }
+        .submit-btn:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(40,167,69,0.3);
+        }
+        body.dark-mode .submit-btn {
+            background-color: #218838;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .submit-btn:hover {
+            background-color: #196f2e;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+        }
+
+        .withdrawal-methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .method-card {
+            background-color: var(--light-color);
+            border: 2px solid var(--border-light);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        body.dark-mode .method-card {
+            background-color: #333;
+            border-color: #555;
+            box-shadow: 0 4px 10px rgba(255,255,255,0.05);
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
+        }
+        body.dark-mode .method-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 15px rgba(255,255,255,0.1);
+        }
+
+        .method-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.3), 0 8px 20px rgba(0,0,0,0.2);
+        }
+        body.dark-mode .method-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.3), 0 8px 20px rgba(255,255,255,0.15);
+        }
+
+        .method-card i {
+            font-size: 45px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        body.dark-mode .method-card i {
+            color: var(--info-color);
+        }
+        .method-card.selected i {
+            color: var(--warning-color);
+        }
+
+        .method-card h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+        body.dark-mode .method-card h4 {
+            color: var(--text-light);
+        }
+
+        .method-card p {
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            line-height: 1.5;
+            transition: var(--transition);
+        }
+        body.dark-mode .method-card p {
+            color: #bbb;
+        }
+
+        .method-card .overlay-checkmark {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            color: var(--success-color);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .method-card.selected .overlay-checkmark {
+            opacity: 1;
+        }
+
+        /* Additional responsive adjustments for withdrawal page */
+        @media (max-width: 600px) {
+            .withdrawal-methods-grid {
+                grid-template-columns: 1fr; /* Stack methods on smaller screens */
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 2000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg-light);
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            position: relative;
+            animation: slideIn 0.3s forwards;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+        body.dark-mode .modal-content {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 8px 30px rgba(255,255,255,0.1);
+            color: var(--text-light);
+        }
+
+        .close-button {
+            color: var(--secondary-color);
+            font-size: 30px;
+            font-weight: bold;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--danger-color);
+            text-decoration: none;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-light);
+        }
+        body.dark-mode .modal-header {
+            border-bottom-color: #555;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-body .form-group input,
+        .modal-body .form-group select {
+            background-color: var(--light-color);
+            border-color: var(--border-light);
+        }
+        body.dark-mode .modal-body .form-group input,
+        body.dark-mode .modal-body .form-group select {
+            background-color: #3a3a3a;
+            border-color: #555;
+            color: var(--text-light);
+        }
+
+        .modal-body .form-group input:focus,
+        .modal-body .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+        }
+
+        .modal-footer {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .modal-footer button {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.05em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .modal-footer .confirm-btn {
+            background-color: var(--success-color);
+            color: var(--text-light);
+        }
+        .modal-footer .confirm-btn:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        body.dark-mode .modal-footer .confirm-btn {
+            background-color: #218838;
+        }
+        body.dark-mode .modal-footer .confirm-btn:hover {
+            background-color: #196f2e;
+        }
+
+        .modal-footer .cancel-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            margin-left: 10px;
+        }
+        .modal-footer .cancel-btn:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        body.dark-mode .modal-footer .cancel-btn {
+            background-color: #5a6268;
+        }
+        body.dark-mode .modal-footer .cancel-btn:hover {
+            background-color: #495057;
+        }
+
+        /* Modal Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-laugh-beam"></i> جوكر
+        </div>
+        <div class="user-menu">
+            <i class="fas fa-bars icon hamburger-icon" id="hamburgerIcon"></i>
+        </div>
+    </div>
+    <div class="container">
+        <div class="main-content">
+            <div class="user-info-card">
+                <div class="content">
+                    <div class="profile-avatar">M</div>
+                    <h2>مرحباً، محمد محمود</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="value">$1250.00</div>
+                            <div class="label">الرصيد الحالي</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="value">25</div>
+                            <div class="label">طلبات مكتملة</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="value">150</div>
+                            <div class="label">إجمالي العمليات</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="value">⭐ 4.8</div>
+                            <div class="label">تقييمك</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">سحب الرصيد</h2>
+
+            <div class="withdrawal-form-section">
+                <div class="current-balance-info">
+                    <i class="fas fa-wallet"></i> رصيدك المتاح للسحب: <span id="availableBalanceDisplay">$1250.00</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="withdrawalAmount">المبلغ المطلوب سحبه ($)</label>
+                    <input type="number" id="withdrawalAmount" placeholder="أدخل المبلغ" min="1" step="0.01" required>
+                    <span class="error-message" id="amountError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="withdrawalMethod">طريقة السحب</label>
+                    <select id="withdrawalMethod" required>
+                        <option value="">اختر طريقة السحب</option>
+                    </select>
+                </div>
+                
+                <div class="withdrawal-methods-grid" id="withdrawalMethodsGrid">
+                </div>
+
+                <div class="form-group" id="paypalEmailGroup" style="display: none;">
+                    <label for="paypalEmail">بريد PayPal الإلكتروني</label>
+                    <input type="email" id="paypalEmail" placeholder="example@example.com">
+                    <span class="error-message" id="paypalEmailError"></span>
+                </div>
+
+                <div class="form-group" id="vodafoneNumberGroup" style="display: none;">
+                    <label for="vodafoneNumber">رقم فودافون كاش</label>
+                    <input type="tel" id="vodafoneNumber" placeholder="مثال: 01012345678">
+                    <span class="error-message" id="vodafoneNumberError"></span>
+                </div>
+
+                <div class="form-group" id="bankDetailsGroup" style="display: none;">
+                    <label for="bankName">اسم البنك</label>
+                    <input type="text" id="bankName" placeholder="مثال: البنك الأهلي المصري">
+                    <span class="error-message" id="bankNameError"></span>
+                    <label for="accountNumber" style="margin-top: 15px;">رقم الحساب/IBAN</label>
+                    <input type="text" id="accountNumber" placeholder="أدخل رقم الحساب أو IBAN">
+                    <span class="error-message" id="accountNumberError"></span>
+                    <label for="swiftCode" style="margin-top: 15px;">رمز سويفت (اختياري)</label>
+                    <input type="text" id="swiftCode" placeholder="SWIFT/BIC Code">
+                    <span class="error-message" id="swiftCodeError"></span>
+                </div>
+
+                <div class="form-group" id="usdtAddressGroup" style="display: none;">
+                    <label for="usdtAddress">عنوان محفظة USDT (TRC20)</label>
+                    <textarea id="usdtAddress" placeholder="أدخل عنوان محفظة USDT الخاص بك. يجب أن يكون عنوان TRC20 صحيحًا ويبدأ بحرف T." rows="3"></textarea>
+                    <span class="error-message" id="usdtAddressError"></span>
+                </div>
+
+                <div class="form-group" id="agentDetailsGroup" style="display: none;">
+                    <label for="agentName">اسم الوكيل</label>
+                    <input type="text" id="agentName" placeholder="أدخل اسم الوكيل">
+                    <span class="error-message" id="agentNameError"></span>
+                    <label for="agentId" style="margin-top: 15px;">معرف الوكيل (اختياري)</label>
+                    <input type="text" id="agentId" placeholder="أدخل معرف الوكيل إذا توفر">
+                    <span class="error-message" id="agentIdError"></span>
+                </div>
+                <div class="withdrawal-fee-info">
+                    <i class="fas fa-hand-holding-dollar"></i>
+                    رسوم السحب: <span id="withdrawalFee">0.00$</span> (<span id="feePercentage">2%</span>) - سيصلك: <span id="amountAfterFee">0.00$</span>
+                </div>
+
+                <button class="submit-btn" id="requestWithdrawalBtn">
+                    <i class="fas fa-paper-plane"></i> طلب سحب الرصيد
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <h3>الصفحات الشخصية</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a></li>
+                    <li><a href="add-balance.html"><i class="fas fa-wallet"></i> إضافة رصيد</a></li>
+                    <li><a href="my-payments.html"><i class="fas fa-receipt"></i> دفعاتي</a></li>
+                    <li><a href="my-wallet.html"><i class="fas fa-credit-card"></i> محفظتي</a></li>
+                    <li><a href="withdrawal.html" class="active"><i class="fas fa-money-bill-transfer"></i> سحب رصيد</a></li>
+                    <li><a href="services.html"><i class="fas fa-shopping-basket"></i> خدماتنا</a></li>
+                    <li><a href="affiliate.html"><i class="fas fa-user-friends"></i> وكلائنا</a></li>
+                    <li><a href="security.html"><i class="fas fa-shield-alt"></i> الحماية</a></li>
+                    <li><a href="about.html"><i class="fas fa-info-circle"></i> من نحن</a></li>
+                    <li><a href="support.html"><i class="fas fa-headset"></i> الدعم الفني</a></li>
+                    <li><a href="edit-profile.html"><i class="fas fa-user-edit"></i> تعديل الملف الشخصي</a></li>
+                    <li><a href="logout.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+                </ul>
+            </nav>
+            <div class="dark-mode-toggle">
+                <span>الوضع الداكن</span>
+                <div class="toggle-container">
+                    <input type="checkbox" id="darkModeToggle">
+                </div>
+            </div>
+            <div class="social-icons">
+                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-telegram-plane"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <div class="footer">
+                <div class="designer-info">
+                    <div class="logo-placeholder">Mohamed</div>
+                    <span>برمجة وتصميم</span>
+                    <span class="highlight">محمد محمود</span>
+                    <span>© 2025 جميع الحقوق محفوظة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="withdrawalModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModalBtn">&times;</span>
+            <div class="modal-header">تأكيد طلب السحب</div>
+            <div class="modal-body">
+                <p>يرجى مراجعة تفاصيل السحب التالية:</p>
+                <div class="form-group">
+                    <label>المبلغ المطلوب سحبه:</label>
+                    <span id="modalWithdrawalAmount"></span>
+                </div>
+                <div class="form-group">
+                    <label>طريقة السحب:</label>
+                    <span id="modalWithdrawalMethod"></span>
+                </div>
+                <div class="form-group" id="modalMethodDetailGroup">
+                    <label id="modalMethodDetailLabel"></label>
+                    <span id="modalMethodDetailValue"></span>
+                </div>
+                <div class="form-group">
+                    <label>رسوم السحب:</label>
+                    <span id="modalWithdrawalFee"></span>
+                </div>
+                <div class="form-group">
+                    <label>المبلغ الذي سيصلك:</label>
+                    <span id="modalAmountAfterFee"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="confirm-btn" id="confirmWithdrawalBtn">تأكيد السحب</button>
+                <button class="cancel-btn" id="cancelWithdrawalBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const hamburgerIcon = document.getElementById('hamburgerIcon');
+            const sidebar = document.getElementById('sidebar');
+
+            // Dark Mode Toggle Logic
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (darkModeToggle) {
+                    darkModeToggle.checked = true;
+                }
+            }
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('change', () => {
+                    if (darkModeToggle.checked) {
+                        document.body.classList.add('dark-mode');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        localStorage.setItem('theme', 'light');
+                    }
+                });
+            }
+
+            // Hamburger Menu Logic (for mobile)
+            if (hamburgerIcon && sidebar) {
+                hamburgerIcon.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            // Close sidebar if clicked outside (for mobile)
+            document.addEventListener('click', (event) => {
+                if (sidebar.classList.contains('active') && !sidebar.contains(event.target) && !hamburgerIcon.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // --- Withdrawal Page Specific JavaScript ---
+
+            const withdrawalAmountInput = document.getElementById('withdrawalAmount');
+            const amountError = document.getElementById('amountError');
+            const withdrawalMethodSelect = document.getElementById('withdrawalMethod');
+            const withdrawalMethodsGrid = document.getElementById('withdrawalMethodsGrid');
+            const paypalEmailGroup = document.getElementById('paypalEmailGroup');
+            const paypalEmailInput = document.getElementById('paypalEmail');
+            const paypalEmailError = document.getElementById('paypalEmailError');
+            const vodafoneNumberGroup = document.getElementById('vodafoneNumberGroup');
+            const vodafoneNumberInput = document.getElementById('vodafoneNumber');
+            const vodafoneNumberError = document.getElementById('vodafoneNumberError');
+            const bankDetailsGroup = document.getElementById('bankDetailsGroup');
+            const bankNameInput = document.getElementById('bankName');
+            const bankNameError = document.getElementById('bankNameError');
+            const accountNumberInput = document.getElementById('accountNumber');
+            const accountNumberError = document.getElementById('accountNumberError');
+            const swiftCodeInput = document.getElementById('swiftCode');
+            const swiftCodeError = document.getElementById('swiftCodeError');
+            const usdtAddressGroup = document.getElementById('usdtAddressGroup');
+            const usdtAddressInput = document.getElementById('usdtAddress');
+            const usdtAddressError = document.getElementById('usdtAddressError');
+            const withdrawalFeeSpan = document.getElementById('withdrawalFee');
+            const feePercentageSpan = document.getElementById('feePercentage');
+            const amountAfterFeeSpan = document.getElementById('amountAfterFee');
+            const requestWithdrawalBtn = document.getElementById('requestWithdrawalBtn');
+            const availableBalanceDisplay = document.getElementById('availableBalanceDisplay');
+
+            // New Agent fields
+            const agentDetailsGroup = document.getElementById('agentDetailsGroup');
+            const agentNameInput = document.getElementById('agentName');
+            const agentNameError = document.getElementById('agentNameError');
+            const agentIdInput = document.getElementById('agentId');
+            const agentIdError = document.getElementById('agentIdError');
+
+
+            // Modal elements
+            const withdrawalModal = document.getElementById('withdrawalModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const confirmWithdrawalBtn = document.getElementById('confirmWithdrawalBtn');
+            const cancelWithdrawalBtn = document.getElementById('cancelWithdrawalBtn');
+            const modalWithdrawalAmount = document.getElementById('modalWithdrawalAmount');
+            const modalWithdrawalMethod = document.getElementById('modalWithdrawalMethod');
+            const modalMethodDetailGroup = document.getElementById('modalMethodDetailGroup');
+            const modalMethodDetailLabel = document.getElementById('modalMethodDetailLabel');
+            const modalMethodDetailValue = document.getElementById('modalMethodDetailValue');
+            const modalWithdrawalFee = document.getElementById('modalWithdrawalFee');
+            const modalAmountAfterFee = document.getElementById('modalAmountAfterFee');
+
+            // --- Configuration ---
+            const currentBalance = 1250.00; // مثال: رصيد المستخدم الحالي (يمكن تحديثه من قاعدة البيانات)
+            const MIN_WITHDRAWAL_AMOUNT = 1.00; // الحد الأدنى للسحب
+            const WITHDRAWAL_FEE_PERCENTAGE = 0.02; // 2% رسوم سحب
+
+            const withdrawalMethodsData = [
+                { id: 'paypal', name: 'PayPal', icon: 'fab fa-paypal', description: `رسوم ${WITHDRAWAL_FEE_PERCENTAGE * 100}%، الحد الأدنى ${MIN_WITHDRAWAL_AMOUNT}$` },
+                { id: 'vodafone-cash', name: 'فودافون كاش', icon: 'fas fa-mobile-alt', description: `رسوم ${WITHDRAWAL_FEE_PERCENTAGE * 100}%، الحد الأدنى ${MIN_WITHDRAWAL_AMOUNT}$` },
+                { id: 'bank-transfer', name: 'تحويل بنكي', icon: 'fas fa-bank', description: `رسوم ${WITHDRAWAL_FEE_PERCENTAGE * 100}%، الحد الأدنى ${MIN_WITHDRAWAL_AMOUNT}$` },
+                { id: 'usdt-trc20', name: 'USDT (TRC20)', icon: 'fas fa-dollar-sign', description: `رسوم ${WITHDRAWAL_FEE_PERCENTAGE * 100}%، الحد الأدنى ${MIN_WITHDRAWAL_AMOUNT}$` },
+                { id: 'agent-withdrawal', name: 'السحب عن طريق وكيل', icon: 'fas fa-user-tie', description: `رسوم ${WITHDRAWAL_FEE_PERCENTAGE * 100}%، الحد الأدنى ${MIN_WITHDRAWAL_AMOUNT}$` },
+            ];
+
+            // Update displayed available balance
+            availableBalanceDisplay.textContent = `$${currentBalance.toFixed(2)}`;
+            feePercentageSpan.textContent = `${(WITHDRAWAL_FEE_PERCENTAGE * 100).toFixed(0)}%`; // Update fee percentage display
+
+            // Populate withdrawal methods grid and select dropdown
+            function populateWithdrawalMethods() {
+                withdrawalMethodsGrid.innerHTML = '';
+                withdrawalMethodSelect.innerHTML = '<option value="">اختر طريقة السحب</option>';
+
+                withdrawalMethodsData.forEach(method => {
+                    // Add to dropdown
+                    const option = document.createElement('option');
+                    option.value = method.id;
+                    option.textContent = method.name;
+                    withdrawalMethodSelect.appendChild(option);
+
+                    // Add to cards grid
+                    const card = document.createElement('div');
+                    card.classList.add('method-card');
+                    card.dataset.methodId = method.id;
+                    card.innerHTML = `
+                        <i class="${method.icon}"></i>
+                        <h4>${method.name}</h4>
+                        <p>${method.description}</p>
+                        <i class="fas fa-check-circle overlay-checkmark"></i>
+                    `;
+                    card.addEventListener('click', () => {
+                        selectWithdrawalMethod(method.id);
+                    });
+                    withdrawalMethodsGrid.appendChild(card);
+                });
+            }
+
+            function selectWithdrawalMethod(methodId) {
+                // Remove 'selected' class from all cards
+                document.querySelectorAll('.method-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+
+                // Add 'selected' class to the clicked card
+                const selectedCard = document.querySelector(`.method-card[data-method-id="${methodId}"]`);
+                if (selectedCard) {
+                    selectedCard.classList.add('selected');
+                }
+
+                // Update the dropdown selection to match the card selection
+                withdrawalMethodSelect.value = methodId;
+                toggleMethodSpecificFields();
+                calculateFee();
+                validateAllInputs(); // Re-validate after method change
+            }
+
+            function toggleMethodSpecificFields() {
+                // Hide all specific fields and clear errors
+                const allSpecificGroups = [paypalEmailGroup, vodafoneNumberGroup, bankDetailsGroup, usdtAddressGroup, agentDetailsGroup];
+                allSpecificGroups.forEach(group => {
+                    group.style.display = 'none';
+                    const inputs = group.querySelectorAll('input, textarea');
+                    inputs.forEach(input => {
+                        input.classList.remove('error');
+                        const errorSpan = input.nextElementSibling; // Assuming error span is the next sibling
+                        if (errorSpan && errorSpan.classList.contains('error-message')) {
+                            errorSpan.textContent = '';
+                        }
+                    });
+                });
+
+                // Show fields based on selected method
+                const selectedMethod = withdrawalMethodSelect.value;
+                if (selectedMethod === 'paypal') {
+                    paypalEmailGroup.style.display = 'block';
+                } else if (selectedMethod === 'vodafone-cash') {
+                    vodafoneNumberGroup.style.display = 'block';
+                } else if (selectedMethod === 'bank-transfer') {
+                    bankDetailsGroup.style.display = 'block';
+                } else if (selectedMethod === 'usdt-trc20') {
+                    usdtAddressGroup.style.display = 'block';
+                } else if (selectedMethod === 'agent-withdrawal') {
+                    agentDetailsGroup.style.display = 'block';
+                }
+            }
+
+            function calculateFee() {
+                const amount = parseFloat(withdrawalAmountInput.value);
+                
+                let fee = 0;
+                let amountAfterFee = 0;
+
+                if (!isNaN(amount) && amount > 0) {
+                    fee = amount * WITHDRAWAL_FEE_PERCENTAGE;
+                    amountAfterFee = amount - fee;
+                }
+
+                withdrawalFeeSpan.textContent = `${fee.toFixed(2)}$`;
+                amountAfterFeeSpan.textContent = `${amountAfterFee.toFixed(2)}$`;
+            }
+
+            function showErrorMessage(element, message) {
+                if (element.tagName === 'SELECT') {
+                    // For select elements, the error message span might be a sibling
+                    const errorSpan = element.closest('.form-group').querySelector('.error-message');
+                    if (errorSpan) {
+                        errorSpan.textContent = message;
+                        element.classList.add('error'); // Add error class to select itself
+                    }
+                } else {
+                    element.textContent = message;
+                    if (element.previousElementSibling) {
+                        element.previousElementSibling.classList.add('error');
+                    }
+                }
+            }
+
+            function hideErrorMessage(element) {
+                if (element.tagName === 'SELECT') {
+                    const errorSpan = element.closest('.form-group').querySelector('.error-message');
+                    if (errorSpan) {
+                        errorSpan.textContent = '';
+                        element.classList.remove('error');
+                    }
+                } else {
+                    element.textContent = '';
+                    if (element.previousElementSibling) {
+                        element.previousElementSibling.classList.remove('error');
+                    }
+                }
+            }
+
+            function validateAmount() {
+                const amount = parseFloat(withdrawalAmountInput.value);
+                let isValid = true;
+
+                if (isNaN(amount) || amount <= 0) {
+                    showErrorMessage(amountError, 'الرجاء إدخال مبلغ صحيح وموجب.');
+                    isValid = false;
+                } else if (amount < MIN_WITHDRAWAL_AMOUNT) {
+                    showErrorMessage(amountError, `الحد الأدنى للسحب هو ${MIN_WITHDRAWAL_AMOUNT}$`);
+                    isValid = false;
+                } else if (amount > currentBalance) {
+                    showErrorMessage(amountError, `المبلغ المطلوب سحبه ($${amount.toFixed(2)}) أكبر من رصيدك المتاح ($${currentBalance.toFixed(2)}).`);
+                    isValid = false;
+                } else {
+                    hideErrorMessage(amountError);
+                }
+                return isValid;
+            }
+
+            function validatePaypalEmail() {
+                const email = paypalEmailInput.value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                let isValid = true;
+                if (paypalEmailGroup.style.display === 'block') {
+                    if (!email) {
+                        showErrorMessage(paypalEmailError, 'الرجاء إدخال بريد PayPal الإلكتروني.');
+                        isValid = false;
+                    } else if (!emailRegex.test(email)) {
+                        showErrorMessage(paypalEmailError, 'صيغة البريد الإلكتروني غير صحيحة.');
+                        isValid = false;
+                    } else {
+                        hideErrorMessage(paypalEmailError);
+                    }
+                }
+                return isValid;
+            }
+
+            function validateVodafoneNumber() {
+                const number = vodafoneNumberInput.value;
+                // Regex for Egyptian mobile numbers starting with 010, 011, 012, 015 and exactly 11 digits
+                const vodafoneRegex = /^(010|011|012|015)\d{8}$/;
+                let isValid = true;
+                if (vodafoneNumberGroup.style.display === 'block') {
+                    if (!number) {
+                        showErrorMessage(vodafoneNumberError, 'الرجاء إدخال رقم فودافون كاش.');
+                        isValid = false;
+                    } else if (!vodafoneRegex.test(number)) {
+                        showErrorMessage(vodafoneNumberError, 'الرجاء إدخال رقم هاتف مصري صحيح مكون من 11 رقمًا (يبدأ بـ 010، 011، 012، 015).');
+                        isValid = false;
+                    } else {
+                        hideErrorMessage(vodafoneNumberError);
+                    }
+                }
+                return isValid;
+            }
+
+            function validateBankDetails() {
+                let isValid = true;
+                if (bankDetailsGroup.style.display === 'block') {
+                    if (!bankNameInput.value.trim()) {
+                        showErrorMessage(bankNameError, 'الرجاء إدخال اسم البنك.');
+                        isValid = false;
+                    } else {
+                        hideErrorMessage(bankNameError);
+                    }
+                    if (!accountNumberInput.value.trim()) {
+                        showErrorMessage(accountNumberError, 'الرجاء إدخال رقم الحساب أو IBAN.');
+                        isValid = false;
+                    } else {
+                        hideErrorMessage(accountNumberError);
+                    }
+                    // SWIFT code validation is optional, so no error for empty
+                    hideErrorMessage(swiftCodeError); // Clear any previous error
+                }
+                return isValid;
+            }
+
+            function validateUsdtAddress() {
+                const address = usdtAddressInput.value.trim();
+                // Basic TRC20 address validation: starts with 'T' and typically 34 alphanumeric characters
+                const usdtTrc20Regex = /^T[a-zA-Z0-9]{33}$/;
+                let isValid = true;
+                if (usdtAddressGroup.style.display === 'block') {
+                    if (!address) {
+                        showErrorMessage(usdtAddressError, 'الرجاء إدخال عنوان محفظة USDT (TRC20).');
+                        isValid = false;
+                    } else if (!usdtTrc20Regex.test(address)) {
+                        showErrorMessage(usdtAddressError, 'صيغة عنوان USDT (TRC20) غير صحيحة. يجب أن يبدأ بحرف T ويحتوي على 34 حرفًا أبجديًا رقميًا.');
+                        isValid = false;
+                    } else {
+                        hideErrorMessage(usdtAddressError);
+                    }
+                }
+                return isValid;
+            }
+
+            // New: Agent Withdrawal Validation
+            function validateAgentDetails() {
+                let isValid = true;
+                if (agentDetailsGroup.style.display === 'block') {
+                    if (!agentNameInput.value.trim()) {
+                        showErrorMessage(agentNameError, 'الرجاء إدخال اسم الوكيل.');
+                        isValid = false;
+                    } else {
+                        hideErrorMessage(agentNameError);
+                    }
+                    // agentId is optional, so no validation for emptiness
+                    hideErrorMessage(agentIdError); // Clear any previous error
+                }
+                return isValid;
+            }
+
+            function validateAllInputs() {
+                let formIsValid = true;
+                formIsValid = validateAmount() && formIsValid; // Order matters for short-circuiting
+
+                const selectedMethod = withdrawalMethodSelect.value;
+                const selectErrorSpan = withdrawalMethodSelect.closest('.form-group').querySelector('.error-message');
+
+                if (!selectedMethod) {
+                    showErrorMessage(selectErrorSpan, 'الرجاء اختيار طريقة سحب.');
+                    formIsValid = false;
+                } else {
+                    if (selectErrorSpan) hideErrorMessage(selectErrorSpan);
+                }
+
+                if (selectedMethod === 'paypal') {
+                    formIsValid = validatePaypalEmail() && formIsValid;
+                } else if (selectedMethod === 'vodafone-cash') {
+                    formIsValid = validateVodafoneNumber() && formIsValid;
+                } else if (selectedMethod === 'bank-transfer') {
+                    formIsValid = validateBankDetails() && formIsValid;
+                } else if (selectedMethod === 'usdt-trc20') {
+                    formIsValid = validateUsdtAddress() && formIsValid;
+                } else if (selectedMethod === 'agent-withdrawal') {
+                    formIsValid = validateAgentDetails() && formIsValid;
+                }
+
+                return formIsValid;
+            }
+
+            function showWithdrawalModal() {
+                if (!validateAllInputs()) {
+                    // If validation fails, stop here. Error messages are already shown.
+                    return;
+                }
+
+                const amount = parseFloat(withdrawalAmountInput.value);
+                const selectedMethodId = withdrawalMethodSelect.value;
+                const method = withdrawalMethodsData.find(m => m.id === selectedMethodId);
+
+                const fee = amount * WITHDRAWAL_FEE_PERCENTAGE;
+                const amountAfterFee = amount - fee;
+
+                modalWithdrawalAmount.textContent = `$${amount.toFixed(2)}`;
+                modalWithdrawalMethod.textContent = method.name;
+                modalWithdrawalFee.textContent = `$${fee.toFixed(2)}`;
+                modalAmountAfterFee.textContent = `$${amountAfterFee.toFixed(2)}`;
+
+                // Update method-specific details in modal
+                modalMethodDetailGroup.style.display = 'block';
+                if (selectedMethodId === 'paypal') {
+                    modalMethodDetailLabel.textContent = 'بريد PayPal الإلكتروني:';
+                    modalMethodDetailValue.textContent = paypalEmailInput.value;
+                } else if (selectedMethodId === 'vodafone-cash') {
+                    modalMethodDetailLabel.textContent = 'رقم فودافون كاش:';
+                    modalMethodDetailValue.textContent = vodafoneNumberInput.value;
+                } else if (selectedMethodId === 'bank-transfer') {
+                    modalMethodDetailLabel.textContent = 'تفاصيل الحساب البنكي:'; // General label for bank details
+                    modalMethodDetailValue.innerHTML = `
+                        اسم البنك: ${bankNameInput.value}<br>
+                        رقم الحساب/IBAN: ${accountNumberInput.value}<br>
+                        رمز سويفت: ${swiftCodeInput.value || 'غير متوفر'}
+                    `;
+                } else if (selectedMethodId === 'usdt-trc20') {
+                    modalMethodDetailLabel.textContent = 'عنوان محفظة USDT (TRC20):';
+                    modalMethodDetailValue.textContent = usdtAddressInput.value;
+                } else if (selectedMethodId === 'agent-withdrawal') {
+                    modalMethodDetailLabel.textContent = 'تفاصيل الوكيل:';
+                    modalMethodDetailValue.innerHTML = `
+                        اسم الوكيل: ${agentNameInput.value}<br>
+                        معرف الوكيل: ${agentIdInput.value || 'غير متوفر'}
+                    `;
+                }
+                 else {
+                    modalMethodDetailGroup.style.display = 'none'; // Hide if no specific details
+                }
+
+                withdrawalModal.style.display = 'flex';
+            }
+
+            function closeWithdrawalModal() {
+                withdrawalModal.style.display = 'none';
+            }
+
+            // --- Event Listeners ---
+            withdrawalMethodSelect.addEventListener('change', () => {
+                const selectedMethodId = withdrawalMethodSelect.value;
+                selectWithdrawalMethod(selectedMethodId); // Sync with grid selection
+                toggleMethodSpecificFields();
+                validateAllInputs(); // Re-validate after method change to ensure all current fields are checked
+            });
+
+            // Re-validate and recalculate on input changes
+            withdrawalAmountInput.addEventListener('input', () => {
+                validateAmount();
+                calculateFee();
+            });
+            paypalEmailInput.addEventListener('input', validatePaypalEmail);
+            vodafoneNumberInput.addEventListener('input', validateVodafoneNumber);
+            bankNameInput.addEventListener('input', validateBankDetails);
+            accountNumberInput.addEventListener('input', validateBankDetails);
+            swiftCodeInput.addEventListener('input', validateBankDetails); // Optional field, but good to check if entered
+            usdtAddressInput.addEventListener('input', validateUsdtAddress);
+            agentNameInput.addEventListener('input', validateAgentDetails); // New agent validation
+            agentIdInput.addEventListener('input', validateAgentDetails); // New agent validation
+
+
+            requestWithdrawalBtn.addEventListener('click', showWithdrawalModal);
+
+            closeModalBtn.addEventListener('click', closeWithdrawalModal);
+            cancelWithdrawalBtn.addEventListener('click', closeWithdrawalModal);
+            window.addEventListener('click', (event) => {
+                if (event.target === withdrawalModal) {
+                    closeWithdrawalModal();
+                }
+            });
+
+            confirmWithdrawalBtn.addEventListener('click', () => {
+                // هنا سترسل طلب السحب إلى الواجهة الخلفية (Backend)
+                // في تطبيق حقيقي، ستقوم بإرسال طلب AJAX هنا
+                alert('تم إرسال طلب السحب بنجاح! سيتم مراجعة طلبك قريباً.');
+                console.log('Withdrawal Confirmed!');
+                console.log('Amount:', withdrawalAmountInput.value);
+                console.log('Method:', withdrawalMethodSelect.value);
+                if (withdrawalMethodSelect.value === 'paypal') console.log('PayPal Email:', paypalEmailInput.value);
+                if (withdrawalMethodSelect.value === 'vodafone-cash') console.log('Vodafone Cash Number:', vodafoneNumberInput.value);
+                if (withdrawalMethodSelect.value === 'bank-transfer') {
+                    console.log('Bank Name:', bankNameInput.value);
+                    console.log('Account Number:', accountNumberInput.value);
+                    console.log('SWIFT Code:', swiftCodeInput.value);
+                }
+                if (withdrawalMethodSelect.value === 'usdt-trc20') console.log('USDT Address:', usdtAddressInput.value);
+                if (withdrawalMethodSelect.value === 'agent-withdrawal') {
+                    console.log('Agent Name:', agentNameInput.value);
+                    console.log('Agent ID:', agentIdInput.value);
+                    // ***** الجزء الجديد: التوجيه إلى صفحة الوكلاء بعد تأكيد السحب عن طريق وكيل *****
+                    window.location.href = 'affiliate.html'; 
+                }
+                
+                closeWithdrawalModal();
+                // اختياريًا، يمكنك إعادة تعيين النموذج أو تحديث واجهة المستخدم بعد السحب الناجح
+                withdrawalAmountInput.value = '';
+                withdrawalMethodSelect.value = '';
+                document.querySelectorAll('.method-card').forEach(card => card.classList.remove('selected'));
+                toggleMethodSpecificFields();
+                calculateFee();
+                validateAllInputs(); // مسح أي أخطاء متبقية
+            });
+
+            // Initial calls
+            populateWithdrawalMethods();
+            toggleMethodSpecificFields(); // Call on page load to hide unnecessary fields
+            calculateFee(); // Calculate initial fee based on empty input
+            validateAllInputs(); // Perform initial validation to ensure state is correct
+        });
+    </script>
+</body>
+</html>
